@@ -513,9 +513,9 @@ void DefineGeometryOptimization(py::module m) {
 
   m.def("IrisInConfigurationSpace",
       py::overload_cast<const multibody::MultibodyPlant<double>&,
-          const systems::Context<double>&, const IrisOptions&>(
+          const systems::Context<double>&, const IrisOptions&, std::optional<HPolyhedron>>(
           &IrisInConfigurationSpace),
-      py::arg("plant"), py::arg("context"), py::arg("options") = IrisOptions(),
+      py::arg("plant"), py::arg("context"), py::arg("options") = IrisOptions(), py::arg("domain") = std::nullopt,
       doc.IrisInConfigurationSpace.doc);
 
   // TODO(#19597) Deprecate and remove these functions once Python

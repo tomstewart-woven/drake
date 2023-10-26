@@ -436,7 +436,8 @@ struct GeometryPairWithDistance {
 
 HPolyhedron IrisInConfigurationSpace(const MultibodyPlant<double>& plant,
                                      const Context<double>& context,
-                                     const IrisOptions& options) {
+                                     const IrisOptions& options,
+                                     std::optional<HPolyhedron> domain) {
   // Check the inputs.
   plant.ValidateContext(context);
   const int nq = plant.num_positions();
@@ -464,6 +465,12 @@ HPolyhedron IrisInConfigurationSpace(const MultibodyPlant<double>& plant,
   HPolyhedron P = HPolyhedron::MakeBox(plant.GetPositionLowerLimits(),
                                        plant.GetPositionUpperLimits());
   DRAKE_DEMAND(P.A().rows() == 2 * nq);
+
+  if (domain) {
+    DRAKE_DEMAND(domain->ambient_dimension() == nq);
+    P = P.Intersection(*domain);
+  }
+
   const double kEpsilonEllipsoid = 1e-2;
   Hyperellipsoid E = options.starting_ellipse.value_or(
       Hyperellipsoid::MakeHypersphere(kEpsilonEllipsoid, seed));

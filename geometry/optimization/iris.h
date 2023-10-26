@@ -193,6 +193,11 @@ increasing `options.num_collision_infeasible_samples` increases the chances that
 the IRIS regions are collision free but can also significantly increase the
 run-time of the algorithm. The same goes for
 `options.num_additional_constraints_infeasible_samples`.
+@param domain optionally allows the caller to override the domain over which
+this function will grow the IRIS region. If unspecified,
+`IrisInConfigurationSpace` will take the domain as the joint limits of the input
+`plant`. If `domain` is specified then `IrisInConfigurationSpace` will take the
+intersection between it and the plant's joint limits as its domain.
 
 @throws std::exception if the sample configuration in @p context is infeasible.
 @ingroup geometry_optimization
@@ -200,7 +205,8 @@ run-time of the algorithm. The same goes for
 HPolyhedron IrisInConfigurationSpace(
     const multibody::MultibodyPlant<double>& plant,
     const systems::Context<double>& context,
-    const IrisOptions& options = IrisOptions());
+    const IrisOptions& options = IrisOptions(),
+    std::optional<HPolyhedron> domain = std::nullopt);
 
 /** Defines a standardized representation for (named) IrisRegions, which can be
 serialized in both C++ and Python. */

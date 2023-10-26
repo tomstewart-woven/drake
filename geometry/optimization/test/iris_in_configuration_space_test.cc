@@ -26,7 +26,8 @@ const double kInf = std::numeric_limits<double>::infinity();
 // Helper method for testing IrisInConfigurationSpace from a urdf string.
 HPolyhedron IrisFromUrdf(const std::string urdf,
                          const Eigen::Ref<const Eigen::VectorXd>& sample,
-                         const IrisOptions& options) {
+                         const IrisOptions& options,
+                         std::optional<HPolyhedron> domain = std::nullopt) {
   systems::DiagramBuilder<double> builder;
   multibody::MultibodyPlant<double>& plant =
       multibody::AddMultibodyPlantSceneGraph(&builder, 0.0);
@@ -40,7 +41,7 @@ HPolyhedron IrisFromUrdf(const std::string urdf,
   auto context = diagram->CreateDefaultContext();
   plant.SetPositions(&plant.GetMyMutableContextFromRoot(context.get()), sample);
   return IrisInConfigurationSpace(plant, plant.GetMyContextFromRoot(*context),
-                                  options);
+                                  options, domain);
 }
 
 // One prismatic link with joint limits.  Iris should return the joint limits.
@@ -364,6 +365,37 @@ GTEST_TEST(IrisInConfigurationSpaceTest, StartingEllipse) {
   // last row of A is a scaling of [100, 1].
   EXPECT_NEAR(region_w_ellipse.A()(4, 0), 100 * region_w_ellipse.A()(4, 1),
               1e-6);
+}
+
+GTEST_TEST(IrisInConfigurationSpaceTest, ExplicitDomain) {
+  const Vector2d sample{0.0, 0.0};
+  IrisOptions options;
+  options.iteration_limit = 1;
+  options.num_collision_infeasible_samples = 0;
+  ConvexSets obstacles;
+  obstacles.emplace_back(VPolytope::MakeBox(Vector2d(.2, .2), Vector2d(1, 1)));
+  options.configuration_obstacles = obstacles;
+  HPolyhedron region = IrisFromUrdf(boxes_in_2d_urdf, sample, options);
+
+  // Define a doimain polytope that halves the plant's joint limits.
+  HPolyhedron region_w_domain =
+      IrisFromUrdf(boxes_in_2d_urdf, sample, options,
+                   HPolyhedron::MakeBox(Vector2d(-1, -0.5), Vector2d(1, 0.5)));
+
+  // region should have only one additional half space beyond the initial
+  // polytope. region_w_domain will have an additional 4 half spaces since its
+  // domain is intersected with the plant's joint limits.
+  EXPECT_EQ(region.b().size(), 5);
+  EXPECT_EQ(region_w_domain.b().size(), 9);
+
+  // The point (-1.5, -0.5) is within the plant's joint limits but outside the
+  // domain. It should be contained in region but not in region_w_domain.
+  EXPECT_TRUE(region.PointInSet(Vector2d(-1.5, -0.5)));
+  EXPECT_FALSE(region_w_domain.PointInSet(Vector2d(-1.5, -0.5)));
+
+  // A point closer to the origin should be in both regions.
+  EXPECT_TRUE(region.PointInSet(Vector2d(-0.5, -0.25)));
+  EXPECT_TRUE(region_w_domain.PointInSet(Vector2d(-0.5, -0.25)));
 }
 
 // Three spheres.  Two on the outside are fixed.  One in the middle on a

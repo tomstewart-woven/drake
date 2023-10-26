@@ -596,10 +596,11 @@ class TestGeometryOptimization(unittest.TestCase):
         ik = InverseKinematics(plant)
         options.prog_with_additional_constraints = ik.prog()
         options.num_additional_constraint_infeasible_samples = 2
+        domain = mut.HPolyhedron.MakeBox(lb=[-1], ub=[1])
         plant.SetPositions(plant.GetMyMutableContextFromRoot(context), [0])
         region = mut.IrisInConfigurationSpace(
             plant=plant, context=plant.GetMyContextFromRoot(context),
-            options=options)
+            options=options, domain=domain)
         self.assertIsInstance(region, mut.ConvexSet)
         self.assertEqual(region.ambient_dimension(), 1)
         self.assertTrue(region.PointInSet([1.0]))
