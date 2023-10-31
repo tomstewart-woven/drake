@@ -68,6 +68,8 @@ build:mosek --define=WITH_MOSEK=ON
 build:packaging --define=WITH_MOSEK=ON
 build:everything --define=WITH_MOSEK=ON
 
+build:clarabel --define=WITH_CLARABEL=ON
+
 ### A configuration that enables SNOPT. ###
 # -- To use this config, you must have access to the private repository
 # -- RobotLocomotion/snopt on GitHub, and your local git must be configured

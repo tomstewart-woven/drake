@@ -32,6 +32,7 @@ top-level documentation for :py:mod:`pydrake.math`.
   internal::DefineSolversIpopt(m);
   internal::DefineSolversMobyLCP(m);
   internal::DefineSolversMosek(m);
+  internal::DefineSolversClarabel(m);
   internal::DefineSolversNlopt(m);
   internal::DefineSolversOsqp(m);
   internal::DefineSolversScs(m);

@@ -467,6 +467,12 @@ if(WITH_MOSEK)
   string(APPEND BAZEL_CONFIG " --config=mosek")
 endif()
 
+option(WITH_CLARABEL "Build with support for CLARABEL" OFF)
+
+if(WITH_CLARABEL)
+  string(APPEND BAZEL_CONFIG " --config=clarabel")
+endif()
+
 set(WITH_ROBOTLOCOMOTION_SNOPT OFF CACHE BOOL
   "Build with support for SNOPT using the RobotLocomotion/snopt private GitHub repository"
 )

@@ -51,6 +51,9 @@ void DefineSolversMobyLCP(py::module m);
 /* Defines the MOSEK™ bindings. See solvers_py_mosek.cc. */
 void DefineSolversMosek(py::module m);
 
+/* Defines the Clarabel bindings. See solvers_py_clarabel.cc. */
+void DefineSolversClarabel(py::module m);
+
 /* Defines the NLOPT bindings. See solvers_py_nlopt.cc. */
 void DefineSolversNlopt(py::module m);
 

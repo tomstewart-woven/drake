@@ -64,6 +64,7 @@ drake_pybind_library(
         "solvers_py_mixed_integer_optimization_util.cc",
         "solvers_py_mixed_integer_rotation_constraint.cc",
         "solvers_py_mobylcp.cc",
+        "solvers_py_clarabel.cc",
         "solvers_py_mosek.cc",
         "solvers_py_nlopt.cc",
         "solvers_py_osqp.cc",
